@@ -1,0 +1,12 @@
+requests
+Explanation
+requests: This is a popular Python library for making HTTP requests. It will be used to interact with web login forms.
+Additional Packages
+If you plan to add more features in the future (like handling JSON responses, multithreading, or logging), you may want to include additional libraries. Here are some common ones you might consider:
+
+beautifulsoup4       # For parsing HTML (if needed)
+lxml                 # For XML/HTML parsing (if needed)
+threading            # For multithreading support
+You can add these libraries to your requirements.txt as needed. To install the requirements, users can run:
+
+pip install -r requirements.txt
